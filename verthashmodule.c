@@ -8,30 +8,20 @@ static PyObject *verthash_getpowhash(PyObject *self, PyObject *args)
     PyObject *value;
 #if PY_MAJOR_VERSION >= 3
     PyBytesObject *input;
-    PyBytesObject *datfile;
 #else
     PyStringObject *input;
-    PyStringObject *datfile;
 #endif
-    if (!PyArg_ParseTuple(args, "SS", &input, &datfile))
+    if (!PyArg_ParseTuple(args, "S", &input))
         return NULL;
     Py_INCREF(input);
-    Py_INCREF(datfile);
     output = PyMem_Malloc(32);
 
 #if PY_MAJOR_VERSION >= 3
-    const Py_ssize_t datfile_size = PyBytes_Size((PyObject*) datfile);
-    const Py_ssize_t input_size = PyBytes_Size((PyObject*) input);
-
-    verthash_hash(PyBytes_AsString((PyObject*) datfile), datfile_size, PyBytes_AsString((PyObject*) input), input_size, output);
+    verthash_hash(PyBytes_AsString((PyObject*) input), output);
 #else
-    const Py_ssize_t datfile_size = PyString_Size((PyObject*) datfile);
-    const Py_ssize_t input_size = PyString_Size((PyObject*) input);
-
-    verthash_hash(PyString_AsString((PyObject*) datfile), datfile_size, PyString_AsString((PyObject*) input), input_size, output);
+    verthash_hash(PyString_AsString((PyObject*) input), output);
 #endif
     Py_DECREF(input);
-    Py_DECREF(datfile);
 #if PY_MAJOR_VERSION >= 3
     value = Py_BuildValue("y#", output, 32);
 #else
